@@ -25,7 +25,7 @@ type VncClient interface {
 	GetStatus(ctx context.Context, in *GetStatusRequest, opts ...grpc.CallOption) (*GetStatusResponse, error)
 	CreateVncPassword(ctx context.Context, in *CreateVncPasswordRequest, opts ...grpc.CallOption) (*CreateVncPasswordResponse, error)
 	RestartVncService(ctx context.Context, in *RestartVncServiceRequest, opts ...grpc.CallOption) (*RestartVncServiceResponse, error)
-	SetUpdateFile(ctx context.Context, in *SetUpdateFileRequest, opts ...grpc.CallOption) (*SetUpdateFileResponse, error)
+	SetChipmunkVersion(ctx context.Context, in *SetChipmunkVersionRequest, opts ...grpc.CallOption) (*SetChipmunkVersionResponse, error)
 }
 
 type vncClient struct {
@@ -63,9 +63,9 @@ func (c *vncClient) RestartVncService(ctx context.Context, in *RestartVncService
 	return out, nil
 }
 
-func (c *vncClient) SetUpdateFile(ctx context.Context, in *SetUpdateFileRequest, opts ...grpc.CallOption) (*SetUpdateFileResponse, error) {
-	out := new(SetUpdateFileResponse)
-	err := c.cc.Invoke(ctx, "/com.codio.chipmunk.proto.vnc.Vnc/SetUpdateFile", in, out, opts...)
+func (c *vncClient) SetChipmunkVersion(ctx context.Context, in *SetChipmunkVersionRequest, opts ...grpc.CallOption) (*SetChipmunkVersionResponse, error) {
+	out := new(SetChipmunkVersionResponse)
+	err := c.cc.Invoke(ctx, "/com.codio.chipmunk.proto.vnc.Vnc/SetChipmunkVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ type VncServer interface {
 	GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error)
 	CreateVncPassword(context.Context, *CreateVncPasswordRequest) (*CreateVncPasswordResponse, error)
 	RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error)
-	SetUpdateFile(context.Context, *SetUpdateFileRequest) (*SetUpdateFileResponse, error)
+	SetChipmunkVersion(context.Context, *SetChipmunkVersionRequest) (*SetChipmunkVersionResponse, error)
 	mustEmbedUnimplementedVncServer()
 }
 
@@ -96,8 +96,8 @@ func (UnimplementedVncServer) CreateVncPassword(context.Context, *CreateVncPassw
 func (UnimplementedVncServer) RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartVncService not implemented")
 }
-func (UnimplementedVncServer) SetUpdateFile(context.Context, *SetUpdateFileRequest) (*SetUpdateFileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetUpdateFile not implemented")
+func (UnimplementedVncServer) SetChipmunkVersion(context.Context, *SetChipmunkVersionRequest) (*SetChipmunkVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetChipmunkVersion not implemented")
 }
 func (UnimplementedVncServer) mustEmbedUnimplementedVncServer() {}
 
@@ -166,20 +166,20 @@ func _Vnc_RestartVncService_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Vnc_SetUpdateFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetUpdateFileRequest)
+func _Vnc_SetChipmunkVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetChipmunkVersionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(VncServer).SetUpdateFile(ctx, in)
+		return srv.(VncServer).SetChipmunkVersion(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/com.codio.chipmunk.proto.vnc.Vnc/SetUpdateFile",
+		FullMethod: "/com.codio.chipmunk.proto.vnc.Vnc/SetChipmunkVersion",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VncServer).SetUpdateFile(ctx, req.(*SetUpdateFileRequest))
+		return srv.(VncServer).SetChipmunkVersion(ctx, req.(*SetChipmunkVersionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -204,8 +204,8 @@ var Vnc_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Vnc_RestartVncService_Handler,
 		},
 		{
-			MethodName: "SetUpdateFile",
-			Handler:    _Vnc_SetUpdateFile_Handler,
+			MethodName: "SetChipmunkVersion",
+			Handler:    _Vnc_SetChipmunkVersion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
