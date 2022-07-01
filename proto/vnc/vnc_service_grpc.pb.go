@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VncClient interface {
 	GetStatus(ctx context.Context, in *GetStatusRequest, opts ...grpc.CallOption) (*GetStatusResponse, error)
-	CreateVncPassword(ctx context.Context, in *CreateVncPasswordRequest, opts ...grpc.CallOption) (*CreateVncPasswordResponse, error)
+	FetchVncPassword(ctx context.Context, in *FetchVncPasswordRequest, opts ...grpc.CallOption) (*FetchVncPasswordResponse, error)
 	RestartVncService(ctx context.Context, in *RestartVncServiceRequest, opts ...grpc.CallOption) (*RestartVncServiceResponse, error)
 	SetChipmunkVersion(ctx context.Context, in *SetChipmunkVersionRequest, opts ...grpc.CallOption) (*SetChipmunkVersionResponse, error)
 }
@@ -45,9 +45,9 @@ func (c *vncClient) GetStatus(ctx context.Context, in *GetStatusRequest, opts ..
 	return out, nil
 }
 
-func (c *vncClient) CreateVncPassword(ctx context.Context, in *CreateVncPasswordRequest, opts ...grpc.CallOption) (*CreateVncPasswordResponse, error) {
-	out := new(CreateVncPasswordResponse)
-	err := c.cc.Invoke(ctx, "/com.codio.chipmunk.proto.vnc.Vnc/CreateVncPassword", in, out, opts...)
+func (c *vncClient) FetchVncPassword(ctx context.Context, in *FetchVncPasswordRequest, opts ...grpc.CallOption) (*FetchVncPasswordResponse, error) {
+	out := new(FetchVncPasswordResponse)
+	err := c.cc.Invoke(ctx, "/com.codio.chipmunk.proto.vnc.Vnc/FetchVncPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *vncClient) SetChipmunkVersion(ctx context.Context, in *SetChipmunkVersi
 // for forward compatibility
 type VncServer interface {
 	GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error)
-	CreateVncPassword(context.Context, *CreateVncPasswordRequest) (*CreateVncPasswordResponse, error)
+	FetchVncPassword(context.Context, *FetchVncPasswordRequest) (*FetchVncPasswordResponse, error)
 	RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error)
 	SetChipmunkVersion(context.Context, *SetChipmunkVersionRequest) (*SetChipmunkVersionResponse, error)
 	mustEmbedUnimplementedVncServer()
@@ -90,8 +90,8 @@ type UnimplementedVncServer struct {
 func (UnimplementedVncServer) GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStatus not implemented")
 }
-func (UnimplementedVncServer) CreateVncPassword(context.Context, *CreateVncPasswordRequest) (*CreateVncPasswordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateVncPassword not implemented")
+func (UnimplementedVncServer) FetchVncPassword(context.Context, *FetchVncPasswordRequest) (*FetchVncPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchVncPassword not implemented")
 }
 func (UnimplementedVncServer) RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartVncService not implemented")
@@ -130,20 +130,20 @@ func _Vnc_GetStatus_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Vnc_CreateVncPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateVncPasswordRequest)
+func _Vnc_FetchVncPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchVncPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(VncServer).CreateVncPassword(ctx, in)
+		return srv.(VncServer).FetchVncPassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/com.codio.chipmunk.proto.vnc.Vnc/CreateVncPassword",
+		FullMethod: "/com.codio.chipmunk.proto.vnc.Vnc/FetchVncPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VncServer).CreateVncPassword(ctx, req.(*CreateVncPasswordRequest))
+		return srv.(VncServer).FetchVncPassword(ctx, req.(*FetchVncPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -196,8 +196,8 @@ var Vnc_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Vnc_GetStatus_Handler,
 		},
 		{
-			MethodName: "CreateVncPassword",
-			Handler:    _Vnc_CreateVncPassword_Handler,
+			MethodName: "FetchVncPassword",
+			Handler:    _Vnc_FetchVncPassword_Handler,
 		},
 		{
 			MethodName: "RestartVncService",
