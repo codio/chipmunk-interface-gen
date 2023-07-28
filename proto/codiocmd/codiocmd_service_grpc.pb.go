@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CodioCmd_FileUpload_FullMethodName   = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileUpload"
-	CodioCmd_FileDownload_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileDownload"
-	CodioCmd_Exec_FullMethodName         = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Exec"
-	CodioCmd_ExecAsync_FullMethodName    = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/ExecAsync"
-	CodioCmd_Ping_FullMethodName         = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Ping"
+	CodioCmd_FileUpload_FullMethodName    = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileUpload"
+	CodioCmd_FileDownload_FullMethodName  = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileDownload"
+	CodioCmd_Exec_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Exec"
+	CodioCmd_ExecAsync_FullMethodName     = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/ExecAsync"
+	CodioCmd_Ping_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Ping"
+	CodioCmd_GetVMHostName_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetVMHostName"
 )
 
 // CodioCmdClient is the client API for CodioCmd service.
@@ -35,6 +36,7 @@ type CodioCmdClient interface {
 	Exec(ctx context.Context, in *ExecRequest, opts ...grpc.CallOption) (*ExecResponse, error)
 	ExecAsync(ctx context.Context, in *ExecAsyncRequest, opts ...grpc.CallOption) (*ExecAsyncResponse, error)
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
+	GetVMHostName(ctx context.Context, in *GetVMHostNameRequest, opts ...grpc.CallOption) (*GetVMHostNameResponse, error)
 }
 
 type codioCmdClient struct {
@@ -138,6 +140,15 @@ func (c *codioCmdClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *codioCmdClient) GetVMHostName(ctx context.Context, in *GetVMHostNameRequest, opts ...grpc.CallOption) (*GetVMHostNameResponse, error) {
+	out := new(GetVMHostNameResponse)
+	err := c.cc.Invoke(ctx, CodioCmd_GetVMHostName_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CodioCmdServer is the server API for CodioCmd service.
 // All implementations must embed UnimplementedCodioCmdServer
 // for forward compatibility
@@ -147,6 +158,7 @@ type CodioCmdServer interface {
 	Exec(context.Context, *ExecRequest) (*ExecResponse, error)
 	ExecAsync(context.Context, *ExecAsyncRequest) (*ExecAsyncResponse, error)
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
+	GetVMHostName(context.Context, *GetVMHostNameRequest) (*GetVMHostNameResponse, error)
 	mustEmbedUnimplementedCodioCmdServer()
 }
 
@@ -168,6 +180,9 @@ func (UnimplementedCodioCmdServer) ExecAsync(context.Context, *ExecAsyncRequest)
 }
 func (UnimplementedCodioCmdServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedCodioCmdServer) GetVMHostName(context.Context, *GetVMHostNameRequest) (*GetVMHostNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVMHostName not implemented")
 }
 func (UnimplementedCodioCmdServer) mustEmbedUnimplementedCodioCmdServer() {}
 
@@ -283,6 +298,24 @@ func _CodioCmd_Ping_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CodioCmd_GetVMHostName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVMHostNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CodioCmdServer).GetVMHostName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CodioCmd_GetVMHostName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CodioCmdServer).GetVMHostName(ctx, req.(*GetVMHostNameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CodioCmd_ServiceDesc is the grpc.ServiceDesc for CodioCmd service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -301,6 +334,10 @@ var CodioCmd_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _CodioCmd_Ping_Handler,
+		},
+		{
+			MethodName: "GetVMHostName",
+			Handler:    _CodioCmd_GetVMHostName_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
