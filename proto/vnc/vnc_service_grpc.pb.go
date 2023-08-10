@@ -22,8 +22,8 @@ const (
 	Vnc_GetStatus_FullMethodName          = "/com.codio.chipmunk.proto.vnc.Vnc/GetStatus"
 	Vnc_FetchVncPassword_FullMethodName   = "/com.codio.chipmunk.proto.vnc.Vnc/FetchVncPassword"
 	Vnc_RestartVncService_FullMethodName  = "/com.codio.chipmunk.proto.vnc.Vnc/RestartVncService"
-	Vnc_SetChipmunkVersion_FullMethodName = "/com.codio.chipmunk.proto.vnc.Vnc/SetChipmunkVersion"
 	Vnc_ForceUpdateConfig_FullMethodName  = "/com.codio.chipmunk.proto.vnc.Vnc/ForceUpdateConfig"
+	Vnc_GetChipmunkVersion_FullMethodName = "/com.codio.chipmunk.proto.vnc.Vnc/GetChipmunkVersion"
 )
 
 // VncClient is the client API for Vnc service.
@@ -33,8 +33,8 @@ type VncClient interface {
 	GetStatus(ctx context.Context, in *GetStatusRequest, opts ...grpc.CallOption) (*GetStatusResponse, error)
 	FetchVncPassword(ctx context.Context, in *FetchVncPasswordRequest, opts ...grpc.CallOption) (*FetchVncPasswordResponse, error)
 	RestartVncService(ctx context.Context, in *RestartVncServiceRequest, opts ...grpc.CallOption) (*RestartVncServiceResponse, error)
-	SetChipmunkVersion(ctx context.Context, in *SetChipmunkVersionRequest, opts ...grpc.CallOption) (*SetChipmunkVersionResponse, error)
 	ForceUpdateConfig(ctx context.Context, in *ForceUpdateConfigRequest, opts ...grpc.CallOption) (*ForceUpdateConfigResponse, error)
+	GetChipmunkVersion(ctx context.Context, in *GetChipmunkVersionRequest, opts ...grpc.CallOption) (*GetChipmunkVersionResponse, error)
 }
 
 type vncClient struct {
@@ -72,18 +72,18 @@ func (c *vncClient) RestartVncService(ctx context.Context, in *RestartVncService
 	return out, nil
 }
 
-func (c *vncClient) SetChipmunkVersion(ctx context.Context, in *SetChipmunkVersionRequest, opts ...grpc.CallOption) (*SetChipmunkVersionResponse, error) {
-	out := new(SetChipmunkVersionResponse)
-	err := c.cc.Invoke(ctx, Vnc_SetChipmunkVersion_FullMethodName, in, out, opts...)
+func (c *vncClient) ForceUpdateConfig(ctx context.Context, in *ForceUpdateConfigRequest, opts ...grpc.CallOption) (*ForceUpdateConfigResponse, error) {
+	out := new(ForceUpdateConfigResponse)
+	err := c.cc.Invoke(ctx, Vnc_ForceUpdateConfig_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *vncClient) ForceUpdateConfig(ctx context.Context, in *ForceUpdateConfigRequest, opts ...grpc.CallOption) (*ForceUpdateConfigResponse, error) {
-	out := new(ForceUpdateConfigResponse)
-	err := c.cc.Invoke(ctx, Vnc_ForceUpdateConfig_FullMethodName, in, out, opts...)
+func (c *vncClient) GetChipmunkVersion(ctx context.Context, in *GetChipmunkVersionRequest, opts ...grpc.CallOption) (*GetChipmunkVersionResponse, error) {
+	out := new(GetChipmunkVersionResponse)
+	err := c.cc.Invoke(ctx, Vnc_GetChipmunkVersion_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +97,8 @@ type VncServer interface {
 	GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error)
 	FetchVncPassword(context.Context, *FetchVncPasswordRequest) (*FetchVncPasswordResponse, error)
 	RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error)
-	SetChipmunkVersion(context.Context, *SetChipmunkVersionRequest) (*SetChipmunkVersionResponse, error)
 	ForceUpdateConfig(context.Context, *ForceUpdateConfigRequest) (*ForceUpdateConfigResponse, error)
+	GetChipmunkVersion(context.Context, *GetChipmunkVersionRequest) (*GetChipmunkVersionResponse, error)
 	mustEmbedUnimplementedVncServer()
 }
 
@@ -115,11 +115,11 @@ func (UnimplementedVncServer) FetchVncPassword(context.Context, *FetchVncPasswor
 func (UnimplementedVncServer) RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartVncService not implemented")
 }
-func (UnimplementedVncServer) SetChipmunkVersion(context.Context, *SetChipmunkVersionRequest) (*SetChipmunkVersionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetChipmunkVersion not implemented")
-}
 func (UnimplementedVncServer) ForceUpdateConfig(context.Context, *ForceUpdateConfigRequest) (*ForceUpdateConfigResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForceUpdateConfig not implemented")
+}
+func (UnimplementedVncServer) GetChipmunkVersion(context.Context, *GetChipmunkVersionRequest) (*GetChipmunkVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChipmunkVersion not implemented")
 }
 func (UnimplementedVncServer) mustEmbedUnimplementedVncServer() {}
 
@@ -188,24 +188,6 @@ func _Vnc_RestartVncService_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Vnc_SetChipmunkVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetChipmunkVersionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VncServer).SetChipmunkVersion(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Vnc_SetChipmunkVersion_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VncServer).SetChipmunkVersion(ctx, req.(*SetChipmunkVersionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Vnc_ForceUpdateConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ForceUpdateConfigRequest)
 	if err := dec(in); err != nil {
@@ -220,6 +202,24 @@ func _Vnc_ForceUpdateConfig_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VncServer).ForceUpdateConfig(ctx, req.(*ForceUpdateConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Vnc_GetChipmunkVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChipmunkVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VncServer).GetChipmunkVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Vnc_GetChipmunkVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VncServer).GetChipmunkVersion(ctx, req.(*GetChipmunkVersionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,12 +244,12 @@ var Vnc_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Vnc_RestartVncService_Handler,
 		},
 		{
-			MethodName: "SetChipmunkVersion",
-			Handler:    _Vnc_SetChipmunkVersion_Handler,
-		},
-		{
 			MethodName: "ForceUpdateConfig",
 			Handler:    _Vnc_ForceUpdateConfig_Handler,
+		},
+		{
+			MethodName: "GetChipmunkVersion",
+			Handler:    _Vnc_GetChipmunkVersion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
