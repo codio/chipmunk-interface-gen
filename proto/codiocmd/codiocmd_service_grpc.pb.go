@@ -19,12 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CodioCmd_FileUpload_FullMethodName    = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileUpload"
-	CodioCmd_FileDownload_FullMethodName  = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileDownload"
-	CodioCmd_Exec_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Exec"
-	CodioCmd_ExecAsync_FullMethodName     = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/ExecAsync"
-	CodioCmd_Ping_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Ping"
-	CodioCmd_GetVMHostName_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetVMHostName"
+	CodioCmd_FileUpload_FullMethodName        = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileUpload"
+	CodioCmd_FileDownload_FullMethodName      = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileDownload"
+	CodioCmd_Exec_FullMethodName              = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Exec"
+	CodioCmd_ExecAsync_FullMethodName         = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/ExecAsync"
+	CodioCmd_Ping_FullMethodName              = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Ping"
+	CodioCmd_GetVMHostName_FullMethodName     = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetVMHostName"
+	CodioCmd_GetRemoteFileList_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetRemoteFileList"
+	CodioCmd_SyncPath_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/SyncPath"
 )
 
 // CodioCmdClient is the client API for CodioCmd service.
@@ -37,6 +39,8 @@ type CodioCmdClient interface {
 	ExecAsync(ctx context.Context, in *ExecAsyncRequest, opts ...grpc.CallOption) (*ExecAsyncResponse, error)
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 	GetVMHostName(ctx context.Context, in *GetVMHostNameRequest, opts ...grpc.CallOption) (*GetVMHostNameResponse, error)
+	GetRemoteFileList(ctx context.Context, in *GetRemoteFileListRequest, opts ...grpc.CallOption) (CodioCmd_GetRemoteFileListClient, error)
+	SyncPath(ctx context.Context, opts ...grpc.CallOption) (CodioCmd_SyncPathClient, error)
 }
 
 type codioCmdClient struct {
@@ -149,6 +153,69 @@ func (c *codioCmdClient) GetVMHostName(ctx context.Context, in *GetVMHostNameReq
 	return out, nil
 }
 
+func (c *codioCmdClient) GetRemoteFileList(ctx context.Context, in *GetRemoteFileListRequest, opts ...grpc.CallOption) (CodioCmd_GetRemoteFileListClient, error) {
+	stream, err := c.cc.NewStream(ctx, &CodioCmd_ServiceDesc.Streams[2], CodioCmd_GetRemoteFileList_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &codioCmdGetRemoteFileListClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type CodioCmd_GetRemoteFileListClient interface {
+	Recv() (*GetRemoteFileListResponse, error)
+	grpc.ClientStream
+}
+
+type codioCmdGetRemoteFileListClient struct {
+	grpc.ClientStream
+}
+
+func (x *codioCmdGetRemoteFileListClient) Recv() (*GetRemoteFileListResponse, error) {
+	m := new(GetRemoteFileListResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *codioCmdClient) SyncPath(ctx context.Context, opts ...grpc.CallOption) (CodioCmd_SyncPathClient, error) {
+	stream, err := c.cc.NewStream(ctx, &CodioCmd_ServiceDesc.Streams[3], CodioCmd_SyncPath_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &codioCmdSyncPathClient{stream}
+	return x, nil
+}
+
+type CodioCmd_SyncPathClient interface {
+	Send(*FileWatcherEvent) error
+	Recv() (*FileWatcherEvent, error)
+	grpc.ClientStream
+}
+
+type codioCmdSyncPathClient struct {
+	grpc.ClientStream
+}
+
+func (x *codioCmdSyncPathClient) Send(m *FileWatcherEvent) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *codioCmdSyncPathClient) Recv() (*FileWatcherEvent, error) {
+	m := new(FileWatcherEvent)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // CodioCmdServer is the server API for CodioCmd service.
 // All implementations must embed UnimplementedCodioCmdServer
 // for forward compatibility
@@ -159,6 +226,8 @@ type CodioCmdServer interface {
 	ExecAsync(context.Context, *ExecAsyncRequest) (*ExecAsyncResponse, error)
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
 	GetVMHostName(context.Context, *GetVMHostNameRequest) (*GetVMHostNameResponse, error)
+	GetRemoteFileList(*GetRemoteFileListRequest, CodioCmd_GetRemoteFileListServer) error
+	SyncPath(CodioCmd_SyncPathServer) error
 	mustEmbedUnimplementedCodioCmdServer()
 }
 
@@ -183,6 +252,12 @@ func (UnimplementedCodioCmdServer) Ping(context.Context, *PingRequest) (*PingRes
 }
 func (UnimplementedCodioCmdServer) GetVMHostName(context.Context, *GetVMHostNameRequest) (*GetVMHostNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVMHostName not implemented")
+}
+func (UnimplementedCodioCmdServer) GetRemoteFileList(*GetRemoteFileListRequest, CodioCmd_GetRemoteFileListServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetRemoteFileList not implemented")
+}
+func (UnimplementedCodioCmdServer) SyncPath(CodioCmd_SyncPathServer) error {
+	return status.Errorf(codes.Unimplemented, "method SyncPath not implemented")
 }
 func (UnimplementedCodioCmdServer) mustEmbedUnimplementedCodioCmdServer() {}
 
@@ -316,6 +391,53 @@ func _CodioCmd_GetVMHostName_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CodioCmd_GetRemoteFileList_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetRemoteFileListRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(CodioCmdServer).GetRemoteFileList(m, &codioCmdGetRemoteFileListServer{stream})
+}
+
+type CodioCmd_GetRemoteFileListServer interface {
+	Send(*GetRemoteFileListResponse) error
+	grpc.ServerStream
+}
+
+type codioCmdGetRemoteFileListServer struct {
+	grpc.ServerStream
+}
+
+func (x *codioCmdGetRemoteFileListServer) Send(m *GetRemoteFileListResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _CodioCmd_SyncPath_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(CodioCmdServer).SyncPath(&codioCmdSyncPathServer{stream})
+}
+
+type CodioCmd_SyncPathServer interface {
+	Send(*FileWatcherEvent) error
+	Recv() (*FileWatcherEvent, error)
+	grpc.ServerStream
+}
+
+type codioCmdSyncPathServer struct {
+	grpc.ServerStream
+}
+
+func (x *codioCmdSyncPathServer) Send(m *FileWatcherEvent) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *codioCmdSyncPathServer) Recv() (*FileWatcherEvent, error) {
+	m := new(FileWatcherEvent)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // CodioCmd_ServiceDesc is the grpc.ServiceDesc for CodioCmd service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -350,6 +472,17 @@ var CodioCmd_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "FileDownload",
 			Handler:       _CodioCmd_FileDownload_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetRemoteFileList",
+			Handler:       _CodioCmd_GetRemoteFileList_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "SyncPath",
+			Handler:       _CodioCmd_SyncPath_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "proto/codiocmd/codiocmd_service.proto",
