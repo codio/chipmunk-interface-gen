@@ -19,14 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CodioCmd_FileUpload_FullMethodName        = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileUpload"
-	CodioCmd_FileDownload_FullMethodName      = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileDownload"
-	CodioCmd_Exec_FullMethodName              = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Exec"
-	CodioCmd_ExecAsync_FullMethodName         = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/ExecAsync"
-	CodioCmd_Ping_FullMethodName              = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Ping"
-	CodioCmd_GetVMHostName_FullMethodName     = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetVMHostName"
-	CodioCmd_GetRemoteFileList_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetRemoteFileList"
-	CodioCmd_SyncPath_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/SyncPath"
+	CodioCmd_FileUpload_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileUpload"
+	CodioCmd_FileDownload_FullMethodName        = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/FileDownload"
+	CodioCmd_Exec_FullMethodName                = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Exec"
+	CodioCmd_ExecAsync_FullMethodName           = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/ExecAsync"
+	CodioCmd_Ping_FullMethodName                = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/Ping"
+	CodioCmd_GetVMHostName_FullMethodName       = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetVMHostName"
+	CodioCmd_GetRemoteFileList_FullMethodName   = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetRemoteFileList"
+	CodioCmd_SyncPath_FullMethodName            = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/SyncPath"
+	CodioCmd_StartPortForwarding_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/StartPortForwarding"
 )
 
 // CodioCmdClient is the client API for CodioCmd service.
@@ -41,6 +42,7 @@ type CodioCmdClient interface {
 	GetVMHostName(ctx context.Context, in *GetVMHostNameRequest, opts ...grpc.CallOption) (*GetVMHostNameResponse, error)
 	GetRemoteFileList(ctx context.Context, in *GetRemoteFileListRequest, opts ...grpc.CallOption) (CodioCmd_GetRemoteFileListClient, error)
 	SyncPath(ctx context.Context, opts ...grpc.CallOption) (CodioCmd_SyncPathClient, error)
+	StartPortForwarding(ctx context.Context, in *StartPortForwardingRequest, opts ...grpc.CallOption) (*StartPortForwardingResponse, error)
 }
 
 type codioCmdClient struct {
@@ -216,6 +218,15 @@ func (x *codioCmdSyncPathClient) Recv() (*FileWatcherEvent, error) {
 	return m, nil
 }
 
+func (c *codioCmdClient) StartPortForwarding(ctx context.Context, in *StartPortForwardingRequest, opts ...grpc.CallOption) (*StartPortForwardingResponse, error) {
+	out := new(StartPortForwardingResponse)
+	err := c.cc.Invoke(ctx, CodioCmd_StartPortForwarding_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CodioCmdServer is the server API for CodioCmd service.
 // All implementations must embed UnimplementedCodioCmdServer
 // for forward compatibility
@@ -228,6 +239,7 @@ type CodioCmdServer interface {
 	GetVMHostName(context.Context, *GetVMHostNameRequest) (*GetVMHostNameResponse, error)
 	GetRemoteFileList(*GetRemoteFileListRequest, CodioCmd_GetRemoteFileListServer) error
 	SyncPath(CodioCmd_SyncPathServer) error
+	StartPortForwarding(context.Context, *StartPortForwardingRequest) (*StartPortForwardingResponse, error)
 	mustEmbedUnimplementedCodioCmdServer()
 }
 
@@ -258,6 +270,9 @@ func (UnimplementedCodioCmdServer) GetRemoteFileList(*GetRemoteFileListRequest, 
 }
 func (UnimplementedCodioCmdServer) SyncPath(CodioCmd_SyncPathServer) error {
 	return status.Errorf(codes.Unimplemented, "method SyncPath not implemented")
+}
+func (UnimplementedCodioCmdServer) StartPortForwarding(context.Context, *StartPortForwardingRequest) (*StartPortForwardingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartPortForwarding not implemented")
 }
 func (UnimplementedCodioCmdServer) mustEmbedUnimplementedCodioCmdServer() {}
 
@@ -438,6 +453,24 @@ func (x *codioCmdSyncPathServer) Recv() (*FileWatcherEvent, error) {
 	return m, nil
 }
 
+func _CodioCmd_StartPortForwarding_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartPortForwardingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CodioCmdServer).StartPortForwarding(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CodioCmd_StartPortForwarding_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CodioCmdServer).StartPortForwarding(ctx, req.(*StartPortForwardingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CodioCmd_ServiceDesc is the grpc.ServiceDesc for CodioCmd service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -460,6 +493,10 @@ var CodioCmd_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetVMHostName",
 			Handler:    _CodioCmd_GetVMHostName_Handler,
+		},
+		{
+			MethodName: "StartPortForwarding",
+			Handler:    _CodioCmd_StartPortForwarding_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
