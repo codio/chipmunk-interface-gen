@@ -27,6 +27,7 @@ const (
 	CodioCmd_GetVMHostName_FullMethodName     = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetVMHostName"
 	CodioCmd_GetRemoteFileList_FullMethodName = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetRemoteFileList"
 	CodioCmd_SyncPath_FullMethodName          = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/SyncPath"
+	CodioCmd_GetReusableToken_FullMethodName  = "/com.codio.chipmunk.proto.codiocmd.CodioCmd/GetReusableToken"
 )
 
 // CodioCmdClient is the client API for CodioCmd service.
@@ -41,6 +42,7 @@ type CodioCmdClient interface {
 	GetVMHostName(ctx context.Context, in *GetVMHostNameRequest, opts ...grpc.CallOption) (*GetVMHostNameResponse, error)
 	GetRemoteFileList(ctx context.Context, in *GetRemoteFileListRequest, opts ...grpc.CallOption) (CodioCmd_GetRemoteFileListClient, error)
 	SyncPath(ctx context.Context, opts ...grpc.CallOption) (CodioCmd_SyncPathClient, error)
+	GetReusableToken(ctx context.Context, in *GetReusableTokenRequest, opts ...grpc.CallOption) (*GetReusableTokenResponse, error)
 }
 
 type codioCmdClient struct {
@@ -216,6 +218,15 @@ func (x *codioCmdSyncPathClient) Recv() (*FileWatcherEvent, error) {
 	return m, nil
 }
 
+func (c *codioCmdClient) GetReusableToken(ctx context.Context, in *GetReusableTokenRequest, opts ...grpc.CallOption) (*GetReusableTokenResponse, error) {
+	out := new(GetReusableTokenResponse)
+	err := c.cc.Invoke(ctx, CodioCmd_GetReusableToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CodioCmdServer is the server API for CodioCmd service.
 // All implementations must embed UnimplementedCodioCmdServer
 // for forward compatibility
@@ -228,6 +239,7 @@ type CodioCmdServer interface {
 	GetVMHostName(context.Context, *GetVMHostNameRequest) (*GetVMHostNameResponse, error)
 	GetRemoteFileList(*GetRemoteFileListRequest, CodioCmd_GetRemoteFileListServer) error
 	SyncPath(CodioCmd_SyncPathServer) error
+	GetReusableToken(context.Context, *GetReusableTokenRequest) (*GetReusableTokenResponse, error)
 	mustEmbedUnimplementedCodioCmdServer()
 }
 
@@ -258,6 +270,9 @@ func (UnimplementedCodioCmdServer) GetRemoteFileList(*GetRemoteFileListRequest, 
 }
 func (UnimplementedCodioCmdServer) SyncPath(CodioCmd_SyncPathServer) error {
 	return status.Errorf(codes.Unimplemented, "method SyncPath not implemented")
+}
+func (UnimplementedCodioCmdServer) GetReusableToken(context.Context, *GetReusableTokenRequest) (*GetReusableTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReusableToken not implemented")
 }
 func (UnimplementedCodioCmdServer) mustEmbedUnimplementedCodioCmdServer() {}
 
@@ -438,6 +453,24 @@ func (x *codioCmdSyncPathServer) Recv() (*FileWatcherEvent, error) {
 	return m, nil
 }
 
+func _CodioCmd_GetReusableToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReusableTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CodioCmdServer).GetReusableToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CodioCmd_GetReusableToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CodioCmdServer).GetReusableToken(ctx, req.(*GetReusableTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CodioCmd_ServiceDesc is the grpc.ServiceDesc for CodioCmd service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -460,6 +493,10 @@ var CodioCmd_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetVMHostName",
 			Handler:    _CodioCmd_GetVMHostName_Handler,
+		},
+		{
+			MethodName: "GetReusableToken",
+			Handler:    _CodioCmd_GetReusableToken_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
