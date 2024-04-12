@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Common_GetTerminalToken_FullMethodName = "/com.codio.chipmunk.proto.common.Common/GetTerminalToken"
+	Common_GetReusableToken_FullMethodName = "/com.codio.chipmunk.proto.common.Common/GetReusableToken"
 )
 
 // CommonClient is the client API for Common service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommonClient interface {
 	GetTerminalToken(ctx context.Context, in *GetTerminalTokenRequest, opts ...grpc.CallOption) (*GetTerminalTokenResponse, error)
+	GetReusableToken(ctx context.Context, in *GetReusableTokenRequest, opts ...grpc.CallOption) (*GetReusableTokenResponse, error)
 }
 
 type commonClient struct {
@@ -46,11 +48,21 @@ func (c *commonClient) GetTerminalToken(ctx context.Context, in *GetTerminalToke
 	return out, nil
 }
 
+func (c *commonClient) GetReusableToken(ctx context.Context, in *GetReusableTokenRequest, opts ...grpc.CallOption) (*GetReusableTokenResponse, error) {
+	out := new(GetReusableTokenResponse)
+	err := c.cc.Invoke(ctx, Common_GetReusableToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommonServer is the server API for Common service.
 // All implementations must embed UnimplementedCommonServer
 // for forward compatibility
 type CommonServer interface {
 	GetTerminalToken(context.Context, *GetTerminalTokenRequest) (*GetTerminalTokenResponse, error)
+	GetReusableToken(context.Context, *GetReusableTokenRequest) (*GetReusableTokenResponse, error)
 	mustEmbedUnimplementedCommonServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedCommonServer struct {
 
 func (UnimplementedCommonServer) GetTerminalToken(context.Context, *GetTerminalTokenRequest) (*GetTerminalTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTerminalToken not implemented")
+}
+func (UnimplementedCommonServer) GetReusableToken(context.Context, *GetReusableTokenRequest) (*GetReusableTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReusableToken not implemented")
 }
 func (UnimplementedCommonServer) mustEmbedUnimplementedCommonServer() {}
 
@@ -92,6 +107,24 @@ func _Common_GetTerminalToken_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Common_GetReusableToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReusableTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServer).GetReusableToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Common_GetReusableToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServer).GetReusableToken(ctx, req.(*GetReusableTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Common_ServiceDesc is the grpc.ServiceDesc for Common service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var Common_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTerminalToken",
 			Handler:    _Common_GetTerminalToken_Handler,
+		},
+		{
+			MethodName: "GetReusableToken",
+			Handler:    _Common_GetReusableToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
