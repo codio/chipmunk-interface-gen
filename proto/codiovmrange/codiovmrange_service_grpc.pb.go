@@ -19,21 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CodioVmRange_DownloadImage_FullMethodName        = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/DownloadImage"
-	CodioVmRange_ListDownloadedImages_FullMethodName = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/ListDownloadedImages"
-	CodioVmRange_CreateVm_FullMethodName             = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/CreateVm"
-	CodioVmRange_StartVm_FullMethodName              = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/StartVm"
-	CodioVmRange_StopVm_FullMethodName               = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/StopVm"
-	CodioVmRange_DestroyVm_FullMethodName            = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/DestroyVm"
-	CodioVmRange_ListVms_FullMethodName              = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/ListVms"
+	CodioVmRange_CreateVm_FullMethodName  = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/CreateVm"
+	CodioVmRange_StartVm_FullMethodName   = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/StartVm"
+	CodioVmRange_StopVm_FullMethodName    = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/StopVm"
+	CodioVmRange_DestroyVm_FullMethodName = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/DestroyVm"
+	CodioVmRange_ListVms_FullMethodName   = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/ListVms"
 )
 
 // CodioVmRangeClient is the client API for CodioVmRange service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CodioVmRangeClient interface {
-	DownloadImage(ctx context.Context, in *DownloadImageRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadImageResponse], error)
-	ListDownloadedImages(ctx context.Context, in *ListDownloadedImagesRequest, opts ...grpc.CallOption) (*ListDownloadedImagesResponse, error)
 	CreateVm(ctx context.Context, in *CreateVmRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[CreateVmResponse], error)
 	StartVm(ctx context.Context, in *StartVmRequest, opts ...grpc.CallOption) (*StartVmResponse, error)
 	StopVm(ctx context.Context, in *StopVmRequest, opts ...grpc.CallOption) (*StopVmResponse, error)
@@ -49,38 +45,9 @@ func NewCodioVmRangeClient(cc grpc.ClientConnInterface) CodioVmRangeClient {
 	return &codioVmRangeClient{cc}
 }
 
-func (c *codioVmRangeClient) DownloadImage(ctx context.Context, in *DownloadImageRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadImageResponse], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &CodioVmRange_ServiceDesc.Streams[0], CodioVmRange_DownloadImage_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[DownloadImageRequest, DownloadImageResponse]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type CodioVmRange_DownloadImageClient = grpc.ServerStreamingClient[DownloadImageResponse]
-
-func (c *codioVmRangeClient) ListDownloadedImages(ctx context.Context, in *ListDownloadedImagesRequest, opts ...grpc.CallOption) (*ListDownloadedImagesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListDownloadedImagesResponse)
-	err := c.cc.Invoke(ctx, CodioVmRange_ListDownloadedImages_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *codioVmRangeClient) CreateVm(ctx context.Context, in *CreateVmRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[CreateVmResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &CodioVmRange_ServiceDesc.Streams[1], CodioVmRange_CreateVm_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &CodioVmRange_ServiceDesc.Streams[0], CodioVmRange_CreateVm_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -141,8 +108,6 @@ func (c *codioVmRangeClient) ListVms(ctx context.Context, in *ListVmsRequest, op
 // All implementations must embed UnimplementedCodioVmRangeServer
 // for forward compatibility.
 type CodioVmRangeServer interface {
-	DownloadImage(*DownloadImageRequest, grpc.ServerStreamingServer[DownloadImageResponse]) error
-	ListDownloadedImages(context.Context, *ListDownloadedImagesRequest) (*ListDownloadedImagesResponse, error)
 	CreateVm(*CreateVmRequest, grpc.ServerStreamingServer[CreateVmResponse]) error
 	StartVm(context.Context, *StartVmRequest) (*StartVmResponse, error)
 	StopVm(context.Context, *StopVmRequest) (*StopVmResponse, error)
@@ -158,12 +123,6 @@ type CodioVmRangeServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCodioVmRangeServer struct{}
 
-func (UnimplementedCodioVmRangeServer) DownloadImage(*DownloadImageRequest, grpc.ServerStreamingServer[DownloadImageResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method DownloadImage not implemented")
-}
-func (UnimplementedCodioVmRangeServer) ListDownloadedImages(context.Context, *ListDownloadedImagesRequest) (*ListDownloadedImagesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListDownloadedImages not implemented")
-}
 func (UnimplementedCodioVmRangeServer) CreateVm(*CreateVmRequest, grpc.ServerStreamingServer[CreateVmResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method CreateVm not implemented")
 }
@@ -198,35 +157,6 @@ func RegisterCodioVmRangeServer(s grpc.ServiceRegistrar, srv CodioVmRangeServer)
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&CodioVmRange_ServiceDesc, srv)
-}
-
-func _CodioVmRange_DownloadImage_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DownloadImageRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(CodioVmRangeServer).DownloadImage(m, &grpc.GenericServerStream[DownloadImageRequest, DownloadImageResponse]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type CodioVmRange_DownloadImageServer = grpc.ServerStreamingServer[DownloadImageResponse]
-
-func _CodioVmRange_ListDownloadedImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListDownloadedImagesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodioVmRangeServer).ListDownloadedImages(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CodioVmRange_ListDownloadedImages_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodioVmRangeServer).ListDownloadedImages(ctx, req.(*ListDownloadedImagesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _CodioVmRange_CreateVm_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -320,10 +250,6 @@ var CodioVmRange_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CodioVmRangeServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListDownloadedImages",
-			Handler:    _CodioVmRange_ListDownloadedImages_Handler,
-		},
-		{
 			MethodName: "StartVm",
 			Handler:    _CodioVmRange_StartVm_Handler,
 		},
@@ -341,11 +267,6 @@ var CodioVmRange_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "DownloadImage",
-			Handler:       _CodioVmRange_DownloadImage_Handler,
-			ServerStreams: true,
-		},
 		{
 			StreamName:    "CreateVm",
 			Handler:       _CodioVmRange_CreateVm_Handler,
