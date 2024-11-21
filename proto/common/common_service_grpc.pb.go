@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Common_GetTerminalToken_FullMethodName = "/com.codio.chipmunk.proto.common.Common/GetTerminalToken"
+	Common_ForceUpdateConfig_FullMethodName  = "/com.codio.chipmunk.proto.common.Common/ForceUpdateConfig"
+	Common_GetChipmunkVersion_FullMethodName = "/com.codio.chipmunk.proto.common.Common/GetChipmunkVersion"
 )
 
 // CommonClient is the client API for Common service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommonClient interface {
-	GetTerminalToken(ctx context.Context, in *GetTerminalTokenRequest, opts ...grpc.CallOption) (*GetTerminalTokenResponse, error)
+	ForceUpdateConfig(ctx context.Context, in *ForceUpdateConfigRequest, opts ...grpc.CallOption) (*ForceUpdateConfigResponse, error)
+	GetChipmunkVersion(ctx context.Context, in *GetChipmunkVersionRequest, opts ...grpc.CallOption) (*GetChipmunkVersionResponse, error)
 }
 
 type commonClient struct {
@@ -37,10 +39,20 @@ func NewCommonClient(cc grpc.ClientConnInterface) CommonClient {
 	return &commonClient{cc}
 }
 
-func (c *commonClient) GetTerminalToken(ctx context.Context, in *GetTerminalTokenRequest, opts ...grpc.CallOption) (*GetTerminalTokenResponse, error) {
+func (c *commonClient) ForceUpdateConfig(ctx context.Context, in *ForceUpdateConfigRequest, opts ...grpc.CallOption) (*ForceUpdateConfigResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetTerminalTokenResponse)
-	err := c.cc.Invoke(ctx, Common_GetTerminalToken_FullMethodName, in, out, cOpts...)
+	out := new(ForceUpdateConfigResponse)
+	err := c.cc.Invoke(ctx, Common_ForceUpdateConfig_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonClient) GetChipmunkVersion(ctx context.Context, in *GetChipmunkVersionRequest, opts ...grpc.CallOption) (*GetChipmunkVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetChipmunkVersionResponse)
+	err := c.cc.Invoke(ctx, Common_GetChipmunkVersion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +63,8 @@ func (c *commonClient) GetTerminalToken(ctx context.Context, in *GetTerminalToke
 // All implementations must embed UnimplementedCommonServer
 // for forward compatibility.
 type CommonServer interface {
-	GetTerminalToken(context.Context, *GetTerminalTokenRequest) (*GetTerminalTokenResponse, error)
+	ForceUpdateConfig(context.Context, *ForceUpdateConfigRequest) (*ForceUpdateConfigResponse, error)
+	GetChipmunkVersion(context.Context, *GetChipmunkVersionRequest) (*GetChipmunkVersionResponse, error)
 	mustEmbedUnimplementedCommonServer()
 }
 
@@ -62,8 +75,11 @@ type CommonServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCommonServer struct{}
 
-func (UnimplementedCommonServer) GetTerminalToken(context.Context, *GetTerminalTokenRequest) (*GetTerminalTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTerminalToken not implemented")
+func (UnimplementedCommonServer) ForceUpdateConfig(context.Context, *ForceUpdateConfigRequest) (*ForceUpdateConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForceUpdateConfig not implemented")
+}
+func (UnimplementedCommonServer) GetChipmunkVersion(context.Context, *GetChipmunkVersionRequest) (*GetChipmunkVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChipmunkVersion not implemented")
 }
 func (UnimplementedCommonServer) mustEmbedUnimplementedCommonServer() {}
 func (UnimplementedCommonServer) testEmbeddedByValue()                {}
@@ -86,20 +102,38 @@ func RegisterCommonServer(s grpc.ServiceRegistrar, srv CommonServer) {
 	s.RegisterService(&Common_ServiceDesc, srv)
 }
 
-func _Common_GetTerminalToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTerminalTokenRequest)
+func _Common_ForceUpdateConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForceUpdateConfigRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CommonServer).GetTerminalToken(ctx, in)
+		return srv.(CommonServer).ForceUpdateConfig(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Common_GetTerminalToken_FullMethodName,
+		FullMethod: Common_ForceUpdateConfig_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommonServer).GetTerminalToken(ctx, req.(*GetTerminalTokenRequest))
+		return srv.(CommonServer).ForceUpdateConfig(ctx, req.(*ForceUpdateConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Common_GetChipmunkVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChipmunkVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServer).GetChipmunkVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Common_GetChipmunkVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServer).GetChipmunkVersion(ctx, req.(*GetChipmunkVersionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -112,8 +146,12 @@ var Common_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CommonServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetTerminalToken",
-			Handler:    _Common_GetTerminalToken_Handler,
+			MethodName: "ForceUpdateConfig",
+			Handler:    _Common_ForceUpdateConfig_Handler,
+		},
+		{
+			MethodName: "GetChipmunkVersion",
+			Handler:    _Common_GetChipmunkVersion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
