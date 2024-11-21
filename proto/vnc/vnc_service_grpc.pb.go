@@ -20,7 +20,6 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Vnc_GetStatus_FullMethodName          = "/com.codio.chipmunk.proto.vnc.Vnc/GetStatus"
-	Vnc_FetchVncPassword_FullMethodName   = "/com.codio.chipmunk.proto.vnc.Vnc/FetchVncPassword"
 	Vnc_RestartVncService_FullMethodName  = "/com.codio.chipmunk.proto.vnc.Vnc/RestartVncService"
 	Vnc_ForceUpdateConfig_FullMethodName  = "/com.codio.chipmunk.proto.vnc.Vnc/ForceUpdateConfig"
 	Vnc_GetChipmunkVersion_FullMethodName = "/com.codio.chipmunk.proto.vnc.Vnc/GetChipmunkVersion"
@@ -31,7 +30,6 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VncClient interface {
 	GetStatus(ctx context.Context, in *GetStatusRequest, opts ...grpc.CallOption) (*GetStatusResponse, error)
-	FetchVncPassword(ctx context.Context, in *FetchVncPasswordRequest, opts ...grpc.CallOption) (*FetchVncPasswordResponse, error)
 	RestartVncService(ctx context.Context, in *RestartVncServiceRequest, opts ...grpc.CallOption) (*RestartVncServiceResponse, error)
 	ForceUpdateConfig(ctx context.Context, in *ForceUpdateConfigRequest, opts ...grpc.CallOption) (*ForceUpdateConfigResponse, error)
 	GetChipmunkVersion(ctx context.Context, in *GetChipmunkVersionRequest, opts ...grpc.CallOption) (*GetChipmunkVersionResponse, error)
@@ -49,16 +47,6 @@ func (c *vncClient) GetStatus(ctx context.Context, in *GetStatusRequest, opts ..
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetStatusResponse)
 	err := c.cc.Invoke(ctx, Vnc_GetStatus_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vncClient) FetchVncPassword(ctx context.Context, in *FetchVncPasswordRequest, opts ...grpc.CallOption) (*FetchVncPasswordResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FetchVncPasswordResponse)
-	err := c.cc.Invoke(ctx, Vnc_FetchVncPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +88,6 @@ func (c *vncClient) GetChipmunkVersion(ctx context.Context, in *GetChipmunkVersi
 // for forward compatibility.
 type VncServer interface {
 	GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error)
-	FetchVncPassword(context.Context, *FetchVncPasswordRequest) (*FetchVncPasswordResponse, error)
 	RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error)
 	ForceUpdateConfig(context.Context, *ForceUpdateConfigRequest) (*ForceUpdateConfigResponse, error)
 	GetChipmunkVersion(context.Context, *GetChipmunkVersionRequest) (*GetChipmunkVersionResponse, error)
@@ -116,9 +103,6 @@ type UnimplementedVncServer struct{}
 
 func (UnimplementedVncServer) GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStatus not implemented")
-}
-func (UnimplementedVncServer) FetchVncPassword(context.Context, *FetchVncPasswordRequest) (*FetchVncPasswordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FetchVncPassword not implemented")
 }
 func (UnimplementedVncServer) RestartVncService(context.Context, *RestartVncServiceRequest) (*RestartVncServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartVncService not implemented")
@@ -164,24 +148,6 @@ func _Vnc_GetStatus_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VncServer).GetStatus(ctx, req.(*GetStatusRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Vnc_FetchVncPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FetchVncPasswordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VncServer).FetchVncPassword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Vnc_FetchVncPassword_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VncServer).FetchVncPassword(ctx, req.(*FetchVncPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -250,10 +216,6 @@ var Vnc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetStatus",
 			Handler:    _Vnc_GetStatus_Handler,
-		},
-		{
-			MethodName: "FetchVncPassword",
-			Handler:    _Vnc_FetchVncPassword_Handler,
 		},
 		{
 			MethodName: "RestartVncService",
