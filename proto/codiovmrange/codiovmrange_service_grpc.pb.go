@@ -23,6 +23,7 @@ const (
 	CodioVmRange_StartVm_FullMethodName   = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/StartVm"
 	CodioVmRange_StopVm_FullMethodName    = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/StopVm"
 	CodioVmRange_DestroyVm_FullMethodName = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/DestroyVm"
+	CodioVmRange_SetParams_FullMethodName = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/SetParams"
 	CodioVmRange_ListVms_FullMethodName   = "/com.codio.chipmunk.proto.codiovmrange.CodioVmRange/ListVms"
 )
 
@@ -34,6 +35,7 @@ type CodioVmRangeClient interface {
 	StartVm(ctx context.Context, in *StartVmRequest, opts ...grpc.CallOption) (*StartVmResponse, error)
 	StopVm(ctx context.Context, in *StopVmRequest, opts ...grpc.CallOption) (*StopVmResponse, error)
 	DestroyVm(ctx context.Context, in *DestroyVmRequest, opts ...grpc.CallOption) (*DestroyVmResponse, error)
+	SetParams(ctx context.Context, in *SetParamsRequest, opts ...grpc.CallOption) (*SetParamsResponse, error)
 	ListVms(ctx context.Context, in *ListVmsRequest, opts ...grpc.CallOption) (*ListVmsResponse, error)
 }
 
@@ -94,6 +96,16 @@ func (c *codioVmRangeClient) DestroyVm(ctx context.Context, in *DestroyVmRequest
 	return out, nil
 }
 
+func (c *codioVmRangeClient) SetParams(ctx context.Context, in *SetParamsRequest, opts ...grpc.CallOption) (*SetParamsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetParamsResponse)
+	err := c.cc.Invoke(ctx, CodioVmRange_SetParams_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *codioVmRangeClient) ListVms(ctx context.Context, in *ListVmsRequest, opts ...grpc.CallOption) (*ListVmsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListVmsResponse)
@@ -112,6 +124,7 @@ type CodioVmRangeServer interface {
 	StartVm(context.Context, *StartVmRequest) (*StartVmResponse, error)
 	StopVm(context.Context, *StopVmRequest) (*StopVmResponse, error)
 	DestroyVm(context.Context, *DestroyVmRequest) (*DestroyVmResponse, error)
+	SetParams(context.Context, *SetParamsRequest) (*SetParamsResponse, error)
 	ListVms(context.Context, *ListVmsRequest) (*ListVmsResponse, error)
 	mustEmbedUnimplementedCodioVmRangeServer()
 }
@@ -134,6 +147,9 @@ func (UnimplementedCodioVmRangeServer) StopVm(context.Context, *StopVmRequest) (
 }
 func (UnimplementedCodioVmRangeServer) DestroyVm(context.Context, *DestroyVmRequest) (*DestroyVmResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DestroyVm not implemented")
+}
+func (UnimplementedCodioVmRangeServer) SetParams(context.Context, *SetParamsRequest) (*SetParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetParams not implemented")
 }
 func (UnimplementedCodioVmRangeServer) ListVms(context.Context, *ListVmsRequest) (*ListVmsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVms not implemented")
@@ -224,6 +240,24 @@ func _CodioVmRange_DestroyVm_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CodioVmRange_SetParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CodioVmRangeServer).SetParams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CodioVmRange_SetParams_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CodioVmRangeServer).SetParams(ctx, req.(*SetParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CodioVmRange_ListVms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListVmsRequest)
 	if err := dec(in); err != nil {
@@ -260,6 +294,10 @@ var CodioVmRange_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DestroyVm",
 			Handler:    _CodioVmRange_DestroyVm_Handler,
+		},
+		{
+			MethodName: "SetParams",
+			Handler:    _CodioVmRange_SetParams_Handler,
 		},
 		{
 			MethodName: "ListVms",
