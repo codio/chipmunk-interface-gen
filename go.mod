@@ -1,3 +1,3 @@
 module github.com/codio/chipmunk-interface-gen
 
-go 1.25.8
+go 1.25.9
